@@ -37,8 +37,9 @@
 					تومان
 				</p>
 			</div>
-			<div class="" @click="goToProfile">
+			<div class="">
 				<img
+					@click="goToProfile"
 					class="rounded-full h-13 w-13 object-cover p-1 float-right mr-5 hover:bg-gray-400"
 					:src="picture"
 					alt=""

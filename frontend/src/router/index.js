@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import ProfileView from "../views/ProfileView.vue";
 // import ChatView from "@/views/ChatView.vue";
 import LoginView from "../views/login.vue";
+import SignupView from "../views/SignupView.vue";
 // import NotFound from "@/views/NotFound.vue";
 
 const routes = [
@@ -10,6 +11,7 @@ const routes = [
 	// { path: "/chat", name: "Chat", component: ChatView },
 	{ path: "/login", name: "Login", component: LoginView },
 	{ path: "/profile", name: "profile", component: ProfileView },
+	{ path: "/signup", name: "signup", component: SignupView },
 ];
 
 const router = createRouter({

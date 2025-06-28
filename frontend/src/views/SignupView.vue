@@ -2,22 +2,27 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { store } from "../store.js";
+import axios from 'axios';
 const router = useRouter()
-let accesstoken = ref('')
-const username = ref('')
-const password = ref('')
 const error = ref('')
 const animation = ref('')
+const password = ref('')
+const username = ref('')
+const email = ref('')
 animation.value = true
-import axios from 'axios';
-async function  login (){
+async function signup(){
     animation.value = false
     error.value = false
     const data = {
-        "username": username.value,
-        "password": password.value,
+        "username":username.value,
+        "password":password.value,
+        "email":email.value
     }
-    const resp = await axios.post(store.url+'api/token/',data).catch(()=>{
+    const resp = await axios.post(store.url +"signup/",data).catch(()=>{
+        error.value = true
+        animation.value = true
+    })
+    const signinresp = await axios.post(store.url+"api/token/",data).catch(()=>{
         error.value = true
         animation.value = true
     })
@@ -33,16 +38,26 @@ async function  login (){
         <div class="rounded h-50 w-50 mx-auto object-cover mb-20">
             <img src="https://app.nesagholikhani.com/assets/images/nesa-gh.png" alt="">
         </div>
-                <div>
-            <h1 class="text-center text-6xl font-bold mb-15 text-fuchsia-800">ورود به حساب کاربری</h1>
+        <div>
+            <h1 class="text-center text-6xl font-bold mb-15 text-fuchsia-800">ایجاد حساب کاربری</h1>
         </div>
 		<div
-			class="rounded-2xl content-center border h-15 border-gray-500 mx-auto w-80 md:w-100"
+			class="rounded-2xl content-center border mb-3 h-15 border-gray-500 mx-auto w-80 md:w-100"
+		>
+			<input v-model="email"
+				name="text"
+				id="email"
+				placeholder="ایمیل خود را وارد کنید"
+				class="h-full w-full mr-5 pr-4 text-right"
+			></input>
+		</div>
+        <div
+			class="rounded-2xl content-center border mb-3 h-15 border-gray-500 mx-auto w-80 md:w-100"
 		>
 			<input v-model="username"
 				name="text"
 				id="username"
-				placeholder="نام کاربری یا ایمیل خود را وارد کنید "
+				placeholder="نام کاربری خود را وارد کنید"
 				class="h-full w-full mr-5 pr-4 text-right"
 			></input>
 		</div>
@@ -62,9 +77,11 @@ async function  login (){
         <div v-if="error" class="text-center">
             <p class="text-red-600 font-black"> نام کاربری یا رمز عبور اشتباه است </p>
         </div>
-        <p class="text-center mt-10 text-gray-400">اگه حساب کاربری ندارین <a class="text-blue-500" href="/signup">اینجا</a> کلیک کنید</p>
+        <div>
+            <p class="text-center py-8 text-gray-400">اگه حساب دارین روی <a href="/login">ورود</a> کلید کنید </p>
+        </div>
         <div class="text-center  font-light">
-            <button @click="login" class="hover:bg-gray-400 rounded-2xl p-2 text-3xl mt-5" > ورود به حساب کاربری  </button>
+            <button @click="signup" class="hover:bg-gray-400 rounded-2xl p-2 text-3xl mt-5" > ایجاد حساب کاربری </button>
             <div>
                 <iframe :class="{'invisible': animation}" class="w-65 h-65 mx-auto p-5" src="https://lottie.host/embed/84a91475-fbd9-41b5-9f2c-e20ce09d5220/EJzDcsocVR.lottie"></iframe>
             
@@ -73,6 +90,8 @@ async function  login (){
 		<p class="text-center mt-10 text-gray-400">
 			...با ساختن حساب  شما <a href="#">شرایط و قوانین</a> رو قبول میکنین
 		</p>
+        <br>
+
 </div>
 </template>
 
