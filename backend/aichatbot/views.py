@@ -10,7 +10,7 @@ from django.shortcuts import HttpResponse
 from requests import get, post
 from openai import OpenAI
 from rest_framework import viewsets, permissions, status
-from .models import ChatSession, ChatMessage, Balance
+from .models import ChatSession, ChatMessage, Balance, Profile
 from .serializers import ChatSessionSerializer, UserSerializer
 from .pricecheck import pricecheckforapi
 

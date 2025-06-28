@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ChatSession, ChatMessage, Profile
+from .models import ChatSession, ChatMessage, Profile, Balance
 import jdatetime
 from django.contrib.auth.models import User
 
@@ -44,4 +44,6 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data["email"],
             password=validated_data["password"],
         )
+        Profile.objects.create(user=user)
+        Balance.objects.create(user=user)
         return user
