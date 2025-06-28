@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { store } from "../store.js";
 const router = useRouter()
 let accesstoken = ref('')
 const username = ref('')
@@ -8,7 +9,6 @@ const password = ref('')
 const error = ref('')
 const animation = ref('')
 animation.value = true
-const url = "http://192.168.10.107:8000/"
 import axios from 'axios';
 async function  login (){
     animation.value = false
@@ -17,7 +17,7 @@ async function  login (){
         "username": username.value,
         "password": password.value,
     }
-    const resp = await axios.post(url+'/api/token/',data).catch(()=>{
+    const resp = await axios.post(store.url+'api/token/',data).catch(()=>{
         error.value = true
         animation.value = true
     })
@@ -25,8 +25,6 @@ async function  login (){
     router.push({name:'Home'})
     animation.value = true
 }
-
-
 </script>
 
 <template>
