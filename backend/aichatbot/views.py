@@ -1,17 +1,18 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .pricecheck import pricecheckforapi
 from . import models
 from django.conf import settings
 from django.shortcuts import HttpResponse
-from requests import get,post
+from requests import get, post
 from openai import OpenAI
-from rest_framework import viewsets, permissions
-from .models import ChatSession,ChatMessage
-from .serializers import ChatSessionSerializer
+from rest_framework import viewsets, permissions, status
+from .models import ChatSession, ChatMessage, Balance
+from .serializers import ChatSessionSerializer, UserSerializer
+from .pricecheck import pricecheckforapi
 
 
 # Create your views here.
@@ -49,23 +50,26 @@ class chats(APIView):
 class sendchat(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    
-    def post(self,request):
+
+    def post(self, request):
         this_user = request.user
         content = request.data.get("content")
-        sessinid = int(request.data.get('sessionid'))
+        sessinid = int(request.data.get("sessionid"))
         session = ChatSession.objects.get(id=sessinid)
-        print(content)
-        ChatMessage.objects.create(role="user",session = session,content=content)
-        clinet = OpenAI(api_key=settings.OPENAI_API_KEY)
-        print(settings.OPENAI_API_KEY)
-        openaiResponse = clinet.responses.create(
-            model='gpt-4-turbo',
-            input=content
-        )
-        ChatMessage.objects.create(role="assistant",session=session,content=openaiResponse.output_text)
+        ChatMessage.objects.create(role="user", session=session, content=content)
+        try:
+            clinet = OpenAI(api_key=settings.OPENAI_API_KEY)
+            userbalance = Balance.objects.get(user=this_user)
+            userbalance.wallet - openaiResponse.usage.total_tokens
+            openaiResponse = clinet.responses.create(model="gpt-4-turbo", input=content)
+            ChatMessage.objects.create(
+                role="assistant", session=session, content=openaiResponse.output_text
+            )
+            userbalance.save()
+        except:
+            return Response({"result": "failure"})
         # here we write the api connection data
-        return Response({"result":"sucess"})
+        return Response({"result": "sucess"})
 
 
 class newChatSession(APIView):
@@ -77,3 +81,16 @@ class newChatSession(APIView):
         this_title = request.data.get("title")
         session = ChatSession.objects.create(user=this_user, title=this_title)
         return Response({"result": "ok", "sessionid": session.id})
+
+
+class signup(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "User created successfully"}, status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
