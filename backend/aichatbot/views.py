@@ -10,7 +10,7 @@ from openai import OpenAI
 
 from .models import ChatSession, ChatMessage, Balance
 from .serializers import ChatSessionSerializer, UserSerializer
-from .pricecheck import pricecheckforapi
+from .service import pricecheckforapi
 
 
 # Create your views here.
